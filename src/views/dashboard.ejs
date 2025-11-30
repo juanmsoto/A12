@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DevSecOps Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-info {
+            font-size: 14px;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .welcome-banner {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .welcome-banner h2 {
+            margin-bottom: 10px;
+        }
+        .welcome-banner p {
+            opacity: 0.95;
+        }
+        .dashboard-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .dashboard-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .nav-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .info-box p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📊 Dashboard</h1>
+            <div>
+                <span class="user-info">Logged in as: <strong><%= user.email %></strong></span>
+                <a href="#" class="logout-btn" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <% if (showWelcomeBanner) { %>
+        <div class="welcome-banner">
+            <h2>🎉 Welcome to the Dashboard!</h2>
+            <p>This welcome banner is controlled by the <strong>FEATURE_WELCOME_BANNER</strong> feature toggle. 
+            When enabled, users see this friendly greeting after login, which may increase engagement with the dashboard.</p>
+        </div>
+        <% } %>
+
+        <div class="dashboard-content">
+            <h2>Main Dashboard</h2>
+            <p>Welcome to your dashboard, <%= user.email %>!</p>
+            
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-link">📊 Dashboard</a>
+                <a href="/messages" class="nav-link">📧 Messages</a>
+            </div>
+
+            <div class="info-box">
+                <h3>About Feature Toggles</h3>
+                <p>
+                    This application demonstrates Hypothesis-Driven Development (HDD) with feature toggles.
+                    The welcome banner above is controlled by the <strong>FEATURE_WELCOME_BANNER</strong> toggle.
+                    You can enable/disable it via environment variables or the config file.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add token to all fetch requests (for API calls)
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            const token = localStorage.getItem('token');
+            if (token && args[1]) {
+                args[1].headers = {
+                    ...args[1].headers,
+                    'Authorization': `Bearer ${token}`
+                };
+            }
+            return originalFetch.apply(this, args);
+        };
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/logout', { method: 'POST' });
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            } catch (error) {
+                // Even if logout fails, clear local storage and redirect
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - DevSecOps Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-info {
+            font-size: 14px;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .messages-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .messages-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .nav-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafafa;
+            transition: box-shadow 0.2s;
+        }
+        .message-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+        .message-from {
+            font-weight: 600;
+            color: #333;
+        }
+        .message-subject {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .message-body {
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        .spam-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .spam-btn:hover {
+            background: #c82333;
+        }
+        .spam-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .success-message.show {
+            display: block;
+        }
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .info-box p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📧 Messages</h1>
+            <div>
+                <span class="user-info">Logged in as: <strong><%= user.email %></strong></span>
+                <a href="#" class="logout-btn" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="messages-content">
+            <h2>Your Messages</h2>
+            
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-link">📊 Dashboard</a>
+                <a href="/messages" class="nav-link">📧 Messages</a>
+            </div>
+
+            <div id="successMessage" class="success-message"></div>
+
+            <div class="message-list">
+                <% messages.forEach(message => { %>
+                <div class="message-item" id="message-<%= message.id %>">
+                    <div class="message-header">
+                        <div>
+                            <div class="message-from">From: <%= message.from %></div>
+                            <div class="message-subject"><%= message.subject %></div>
+                        </div>
+                        <% if (showSpamReportButton) { %>
+                        <button class="spam-btn" onclick="reportSpam('<%= message.id %>')">
+                            🚫 Report Spam
+                        </button>
+                        <% } %>
+                    </div>
+                    <div class="message-body"><%= message.body %></div>
+                </div>
+                <% }); %>
+            </div>
+
+            <div class="info-box">
+                <h3>About Feature Toggles</h3>
+                <p>
+                    The "Report Spam" buttons are controlled by the <strong>FEATURE_SPAM_REPORT_BUTTON</strong> toggle.
+                    <% if (showSpamReportButton) { %>
+                        <strong>Currently enabled</strong> - You can report spam messages.
+                    <% } else { %>
+                        <strong>Currently disabled</strong> - Spam reporting is not available.
+                    <% } %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add token to all fetch requests (for API calls)
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            const token = localStorage.getItem('token');
+            if (token && args[1]) {
+                args[1].headers = {
+                    ...args[1].headers,
+                    'Authorization': `Bearer ${token}`
+                };
+            }
+            return originalFetch.apply(this, args);
+        };
+
+        async function reportSpam(messageId) {
+            const token = localStorage.getItem('token'); // For API calls
+            const btn = document.querySelector(`#message-${messageId} .spam-btn`);
+            const successDiv = document.getElementById('successMessage');
+
+            // Disable button
+            btn.disabled = true;
+            btn.textContent = 'Reporting...';
+
+            try {
+                const response = await fetch(`/report-spam/${messageId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    successDiv.textContent = `✓ Spam reported successfully for message ${messageId}`;
+                    successDiv.classList.add('show');
+                    btn.textContent = '✓ Reported';
+                    btn.style.background = '#28a745';
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successDiv.classList.remove('show');
+                    }, 3000);
+                } else {
+                    alert(data.error || 'Failed to report spam');
+                    btn.disabled = false;
+                    btn.textContent = '🚫 Report Spam';
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+                btn.disabled = false;
+                btn.textContent = '🚫 Report Spam';
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/logout', { method: 'POST' });
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            } catch (error) {
+                // Even if logout fails, clear local storage and redirect
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>
+

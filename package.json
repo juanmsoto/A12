@@ -1,0 +1,30 @@
+{
+  "name": "devsecops-demo-app",
+  "version": "1.0.0",
+  "description": "Demo application for DevSecOps, HDD, Feature Toggles, and Reliability Engineering assignments",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "devsecops",
+    "feature-toggles",
+    "reliability",
+    "observability"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "prom-client": "^15.1.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

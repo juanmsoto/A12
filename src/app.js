@@ -143,10 +143,10 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`\n🚀 DevSecOps Demo App running on http://localhost:${PORT}`);
-  console.log(`📊 Metrics available at http://localhost:${PORT}/metrics`);
-  console.log(`❤️  Health check at http://localhost:${PORT}/health`);
-  console.log(`\n📝 Default credentials:`);
+  console.log(`\nDevSecOps Demo App running on http://localhost:${PORT}`);
+  console.log(`Metrics available at http://localhost:${PORT}/metrics`);
+  console.log(`Health check at http://localhost:${PORT}/health`);
+  console.log(`\nDefault credentials:`);
   console.log(`   Email: test@example.com`);
   console.log(`   Password: password123\n`);
 });
